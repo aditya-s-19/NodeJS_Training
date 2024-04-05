@@ -14,7 +14,6 @@ app.get("/", (req: Request, res: Response) => {
 
 app.post("/", (req: Request, res: Response) => {
   const newTask: Task = {
-    // query and params
     id: `task #${Date.now()}`,
     value: req.body.value,
     date: req.body.date,
@@ -36,7 +35,7 @@ app.patch("/", (req: Request, res: Response) => {
 });
 
 app.delete("/", (req: Request, res: Response) => {
-  const deletedId: string = req.body.id; // multiple deletes together
+  const deletedId: string = req.body.id;
   tasks = tasks.filter((task) => task.id !== deletedId);
   res.send(JSON.stringify(tasks));
 });

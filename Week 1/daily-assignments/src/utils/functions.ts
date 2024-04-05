@@ -4,7 +4,6 @@ const FILE_PATH = "../../public/assets/weatherHistory.json";
 const API_URL = "http://api.weatherapi.com/v1/current.json?key=42fb4882a30c4db4a0062820240304";
 
 const getAndStoreNewData = async (city: string) => {
-  // two functions, api service and db layer
   try {
     const jsonData = await fs.readFile(FILE_PATH);
     const data = JSON.parse(jsonData);

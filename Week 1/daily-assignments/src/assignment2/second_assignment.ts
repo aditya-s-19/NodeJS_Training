@@ -18,7 +18,6 @@ app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: true }));
 
 app.get("/weather", async (req: Request, res: Response) => {
-  //request not used
   const data = await getWeatherData();
   res.render("weather", { data });
 });
