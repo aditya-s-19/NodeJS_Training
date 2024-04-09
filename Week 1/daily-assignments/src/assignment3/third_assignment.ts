@@ -8,7 +8,23 @@ let tasks: Task[] = [];
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.get("/", (req: Request, res: Response) => {
+function func1(req, res, next) {
+  console.log("1 called");
+  next();
+}
+
+function func2(req, res, next) {
+  console.log("2 called");
+  next();
+}
+
+function func3(req, res, next) {
+  console.log("3 called");
+  next();
+}
+
+app.get("/", func3, func1, func2, (req: Request, res: Response) => {
+  console.log("hello");
   res.send(JSON.stringify(tasks));
 });
 
