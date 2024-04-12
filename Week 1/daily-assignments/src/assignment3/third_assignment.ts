@@ -8,27 +8,12 @@ let tasks: Task[] = [];
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-function func1(req, res, next) {
-  console.log("1 called");
-  next();
-}
-
-function func2(req, res, next) {
-  console.log("2 called");
-  next();
-}
-
-function func3(req, res, next) {
-  console.log("3 called");
-  next();
-}
-
-app.get("/", func3, func1, func2, (req: Request, res: Response) => {
+app.get("/", (req: Request, res: Response): void => {
   console.log("hello");
   res.send(JSON.stringify(tasks));
 });
 
-app.post("/", (req: Request, res: Response) => {
+app.post("/", (req: Request, res: Response): void => {
   const newTask: Task = {
     id: `task #${Date.now()}`,
     value: req.body.value,
@@ -39,18 +24,18 @@ app.post("/", (req: Request, res: Response) => {
   res.send(JSON.stringify(tasks));
 });
 
-app.put("/", async (req: Request, res: Response) => {
+app.put("/", async (req: Request, res: Response): void => {
   tasks = [req.body.newTasks];
   res.send(JSON.stringify(tasks));
 });
 
-app.patch("/", (req: Request, res: Response) => {
+app.patch("/", (req: Request, res: Response): void => {
   const updatedTask: Task = req.body.task;
   tasks = tasks.map((task) => (task.id === updatedTask.id ? updatedTask : task));
   res.send(JSON.stringify(tasks));
 });
 
-app.delete("/", (req: Request, res: Response) => {
+app.delete("/", (req: Request, res: Response): void => {
   const deletedId: string = req.body.id;
   tasks = tasks.filter((task) => task.id !== deletedId);
   res.send(JSON.stringify(tasks));

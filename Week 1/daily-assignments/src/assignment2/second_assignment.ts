@@ -17,19 +17,19 @@ app.use(express.static("../../public"));
 app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: true }));
 
-app.get("/weather", async (req: Request, res: Response) => {
+app.get("/weather", async (req: Request, res: Response): Promise<void> => {
   const data = await getWeatherData();
   res.render("weather", { data });
 });
 
-app.get("/weatherCity", async (req: Request, res: Response) => {
+app.get("/weatherCity", async (req: Request, res: Response): Promise<void> => {
   const data: WeatherData = await getWeatherData();
   const key = req.query.key as string;
   const cityData = data[key];
   res.send(JSON.stringify(cityData));
 });
 
-app.post("/weather", async (req: Request, res: Response) => {
+app.post("/weather", async (req: Request, res: Response): Promise<void> => {
   const city: string = req.body.city;
   const store = await storeNewCityData(city);
   const data = await getWeatherData();
