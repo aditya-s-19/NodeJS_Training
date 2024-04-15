@@ -5,12 +5,12 @@ import { Request, Response, NextFunction } from "express";
 const fs = require("fs/promises");
 
 const app = express();
-const FILE_PATH = "../../resources/users.json";
+const FILE_PATH: string = "../../resources/users.json";
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.get("/register", async (req: Request, res: Response) => {
+app.get("/register", async (req: Request, res: Response): Promise<void> => {
   const { username, password, age } = req.body;
   const response = await fs.readFile(FILE_PATH);
   const data = JSON.parse(response);
@@ -26,7 +26,7 @@ app.get("/register", async (req: Request, res: Response) => {
   }
 });
 
-app.get("/login", async (req: Request, res: Response) => {
+app.get("/login", async (req: Request, res: Response): Promise<void> => {
   const { username, password } = req.body;
   const response = await fs.readFile(FILE_PATH);
   const data = JSON.parse(response);
@@ -62,7 +62,7 @@ const getToken = (req: Request): string => {
   return "";
 };
 
-const auth = (req: Request, res: Response, next: NextFunction) => {
+const auth = (req: Request, res: Response, next: NextFunction): void => {
   const token = getToken(req);
   if (!token) {
     return res.send("Invalid token! Access not allowed");
@@ -76,7 +76,7 @@ const auth = (req: Request, res: Response, next: NextFunction) => {
   });
 };
 
-app.get("/:user", auth, async (req: Request, res: Response) => {
+app.get("/:user", auth, async (req: Request, res: Response): Promise<void> => {
   const response = await fs.readFile(FILE_PATH);
   const data = JSON.parse(response);
   if (!Object.keys(data).find((existingUsername) => existingUsername === req.params.user)) {
