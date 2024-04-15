@@ -15,14 +15,14 @@ app.get("/register", async (req: Request, res: Response): Promise<void> => {
   const response = await fs.readFile(FILE_PATH);
   const data = JSON.parse(response);
   if (Object.keys(data).find((existingUsername) => existingUsername === username)) {
-    return res.send("This username already exist");
+    return res.status(409).send("This username already exist");
   } else {
     data[username] = {
       password,
       age,
     };
     fs.writeFile(FILE_PATH, JSON.stringify(data));
-    return res.send("User added successfully!");
+    return res.status(201).send("User added successfully!");
   }
 });
 
@@ -32,10 +32,10 @@ app.get("/login", async (req: Request, res: Response): Promise<void> => {
   const data = JSON.parse(response);
 
   if (!Object.keys(data).find((existingUsername) => existingUsername === username)) {
-    return res.send("This username does not exist");
+    return res.status(404).send("This username does not exist");
   }
   if (data[username].password !== password) {
-    return res.send("This username and password combination does not exist");
+    return res.status(401).send("This username and password combination does not exist");
   }
   const user = {
     username,
@@ -62,25 +62,25 @@ const getToken = (req: Request): string => {
   return "";
 };
 
-const auth = (req: Request, res: Response, next: NextFunction): void => {
+const authorization = (req: Request, res: Response, next: NextFunction): void => {
   const token = getToken(req);
   if (!token) {
-    return res.send("Invalid token! Access not allowed");
+    return res.status(401).send("Error Occured while token authorization");
   }
   jwt.verify(token, process.env.SECRET_KEY, (err: Error, authData: string) => {
     if (err) {
-      return res.send("error occured while verifying token");
+      return res.status(498).send("Invalid/Expired token");
     }
     req.body.authData = authData;
     next();
   });
 };
 
-app.get("/:user", auth, async (req: Request, res: Response): Promise<void> => {
+app.get("/:user", authorization, async (req: Request, res: Response): Promise<void> => {
   const response = await fs.readFile(FILE_PATH);
   const data = JSON.parse(response);
   if (!Object.keys(data).find((existingUsername) => existingUsername === req.params.user)) {
-    return res.send("This username does not exist");
+    return res.status(404).send("This username does not exist");
   }
   const currentUser = req.body.authData.user.username;
   return res.json({
