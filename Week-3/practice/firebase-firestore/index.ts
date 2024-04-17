@@ -23,8 +23,10 @@ const firebaseApp = firebase_admin.initializeApp({
 const db = firebase_admin.firestore();
 
 app.get("/", async (req: Request, res: Response) => {
-  const user: User = req.body.user;
-  const { firstName, lastName } = user;
+  const { firstName, lastName } = req.query;
+  if (typeof firstName !== "string" || typeof lastName !== "string") {
+    return res.status(400).send("firstName and lastName must be strings");
+  }
   const docRef = db.collection("users").doc((firstName[0] + lastName).toLowerCase());
   const doc = await docRef.get();
   if (!doc.exists) {
@@ -41,7 +43,7 @@ app.post("/", async (req: Request, res: Response) => {
   try {
     const docRef = db.collection("users").doc(`${(user.firstName[0] + user.lastName).toLowerCase()}`);
     await docRef.set(user);
-    return res.status(204);
+    return res.status(204).end();
   } catch (err) {
     console.log("Error occurred: " + err);
     res.status(500).send("Error occured");

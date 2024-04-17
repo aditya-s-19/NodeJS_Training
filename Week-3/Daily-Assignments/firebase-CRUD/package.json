@@ -1,0 +1,22 @@
+{
+  "name": "firebase-crud",
+  "version": "1.0.0",
+  "description": "does crud operations in firestore of firebase",
+  "main": "index.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "aditya",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "firebase": "^10.11.0",
+    "firebase-admin": "^12.1.0"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/firebase": "^3.2.1",
+    "@types/node": "^20.12.7"
+  }
+}
