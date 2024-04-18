@@ -1,6 +1,6 @@
 const admin = require("firebase-admin");
 require("dotenv").config();
-import { User, DatabaseOperationResult } from "./interfaces";
+import { User, DatabaseOperationResult, DatabaseOperationResultWithData } from "./interfaces";
 
 const { GOOGLE_APPLICATION_CREDENTIALS } = process.env;
 
@@ -19,7 +19,7 @@ const getDocRef = (user: User) => {
 export const createUser = async (user: User): Promise<DatabaseOperationResult> => {
   const docRef = getDocRef(user);
   const userData = await docRef.get();
-  if (!userData.exists) {
+  if (userData.exists) {
     return {
       status: 409,
       message: "This user already exists",
@@ -32,13 +32,14 @@ export const createUser = async (user: User): Promise<DatabaseOperationResult> =
   };
 };
 
-export const readUser = async (user: User): Promise<DatabaseOperationResult> => {
+export const readUser = async (user: User): Promise<DatabaseOperationResultWithData> => {
   const docRef = getDocRef(user);
   const userData = await docRef.get();
   if (!userData.exists) {
     return {
       status: 404,
       message: "User not found",
+      userData,
     };
   }
   return {
