@@ -22,7 +22,7 @@ const writeToDatabase = async (
   return;
 };
 
-app.get("/", async (req: Request, res: Response): Promise<void> => {
+app.get("/user", async (req: Request, res: Response): Promise<void> => {
   const { firstName, lastName } = req.query;
   if (typeof firstName !== "string" || typeof lastName !== "string") {
     res.status(400).send("Given user is invalid").end();
@@ -45,15 +45,15 @@ app.get("/", async (req: Request, res: Response): Promise<void> => {
   res.end();
 });
 
-app.post("/", async (req: Request, res: Response): Promise<void> => {
+app.post("/user", async (req: Request, res: Response): Promise<void> => {
   writeToDatabase(req.body.user, res, createUser);
 });
 
-app.patch("/", async (req: Request, res: Response): Promise<void> => {
+app.patch("/user", async (req: Request, res: Response): Promise<void> => {
   writeToDatabase(req.body.user, res, updateUser);
 });
 
-app.delete("/", async (req: Request, res: Response): Promise<void> => {
+app.delete("/user", async (req: Request, res: Response): Promise<void> => {
   writeToDatabase(req.body.user, res, deleteUser);
 });
 
