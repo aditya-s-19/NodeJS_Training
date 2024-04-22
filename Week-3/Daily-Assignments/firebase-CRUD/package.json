@@ -4,7 +4,7 @@
   "description": "does crud operations in firestore of firebase",
   "main": "index.ts",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest --watchAll"
   },
   "author": "aditya",
   "license": "ISC",
@@ -15,8 +15,16 @@
     "firebase-admin": "^12.1.0"
   },
   "devDependencies": {
+    "@babel/core": "^7.24.4",
+    "@babel/preset-env": "^7.24.4",
+    "@babel/preset-typescript": "^7.24.1",
     "@types/express": "^4.17.21",
     "@types/firebase": "^3.2.1",
-    "@types/node": "^20.12.7"
+    "@types/jest": "^29.5.12",
+    "@types/mocha": "^10.0.6",
+    "@types/node": "^20.12.7",
+    "babel-jest": "^29.7.0",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.1.2"
   }
 }

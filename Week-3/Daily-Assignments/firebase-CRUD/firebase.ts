@@ -80,3 +80,10 @@ export const deleteUser = async (user: User): Promise<DatabaseOperationResult> =
     message: "User deleted successfully",
   };
 };
+
+module.exports = {
+  readUser,
+  createUser,
+  updateUser,
+  deleteUser,
+};
