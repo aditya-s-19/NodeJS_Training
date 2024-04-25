@@ -2,10 +2,10 @@ const admin = require("firebase-admin");
 require("dotenv").config();
 import { User, DatabaseOperationResult, DatabaseOperationResultWithData } from "./interfaces";
 
-const { GOOGLE_APPLICATION_CREDENTIALS } = process.env;
+const credentials = require("./config/firebaseConfig");
 
 admin.initializeApp({
-  credential: admin.credential.cert(GOOGLE_APPLICATION_CREDENTIALS),
+  credential: admin.credential.cert(credentials),
 });
 
 const db = admin.firestore();
