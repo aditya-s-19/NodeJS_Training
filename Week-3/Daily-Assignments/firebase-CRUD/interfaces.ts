@@ -17,3 +17,8 @@ export interface DatabaseOperationResultWithData {
     exists: boolean;
   };
 }
+
+export interface ArgumentsApiResponseMessage {
+  userData: { exists: boolean };
+  writeData?: { operation: (user: User) => Promise<void>; user: User };
+}

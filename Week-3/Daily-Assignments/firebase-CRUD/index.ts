@@ -16,7 +16,6 @@ const writeToDatabase = async (
     res.status(404).send("User data not sent").end();
     return;
   }
-  console.log(user);
   const result: DatabaseOperationResult = await databaseOperation(user);
   res.status(result.status).send(result.message).end();
   return;
