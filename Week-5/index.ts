@@ -14,26 +14,35 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 connectToDatabase();
 
-app.get('/token', (req: Request, res: Response) => {
-  const user: User = req.body.user;
-  const token: string = generateJWT(user);
-  res.status(200).send(token);
+app.get('/token', (req: Request, res: Response): void => {
+  try {
+    const user: User = req.body.user;
+    if (!user) {
+      res.status(400).send('Bad Request');
+      return;
+    }
+    const token: string = generateJWT(user);
+    res.status(200).send(token);
+  } catch (err) {
+    console.log('Error occured: ', err);
+    res.status(500).send('Internal Server Error');
+  }
 });
 
 app.get(
   '/sports',
   authenticateJWT,
   async (req: Request, res: Response): Promise<void> => {
-    const data: SportShape[] | AggregateData[] =
-      req.query.type !== 'aggregate'
-        ? await getData()
-        : await getDataAggregation();
-    if (data) {
-      res.status(202).send(data).end();
-    } else {
-      res.status(404).send('No Data found').end();
+    try {
+      const data: SportShape[] | AggregateData[] =
+        req.query.type !== 'aggregate'
+          ? await getData()
+          : await getDataAggregation();
+      data ? res.status(200).send(data) : res.status(404).send('No Data found');
+    } catch (err) {
+      console.log('Error occured: ', err);
+      res.status(500).send('Internal Server Error');
     }
-    return;
   },
 );
 
@@ -41,12 +50,21 @@ app.post(
   '/sports',
   authenticateJWT,
   async (req: Request, res: Response): Promise<void> => {
-    const newSport: SportShape = req.body.newSport;
-    const status = await enterData(newSport);
-    status !== 400
-      ? res.status(status).send('Data submitted')
-      : res.status(status).send('Some Problem Occured');
-    return;
+    try {
+      const newSport: SportShape = req.body.newSport;
+      if (!newSport) {
+        res.status(400).send('Bad Request');
+        return;
+      }
+      const status: number = await enterData(newSport);
+      if (status !== 201) {
+        throw new Error('Function enterData() crashed in mongo.ts');
+      }
+      res.status(status).send('Data submitted');
+    } catch (err) {
+      console.log('Error occured: ', err);
+      res.status(500).send('Internal Server Error');
+    }
   },
 );
 

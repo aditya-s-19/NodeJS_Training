@@ -1,17 +1,40 @@
-const { enterData, getData, getDataAggregation, Sport } = require('../mongo');
+import { SportShape } from '../interfaces';
+
+const {
+  enterData,
+  getData,
+  getDataAggregation,
+  Sport,
+  Players,
+} = require('../mongo');
+
 describe('enterData', () => {
   it('should return 201 on successful data entry', async () => {
-    Sport.prototype.save = jest.fn().mockResolvedValue(9);
-    const result = await enterData({
-      name: 'Badminton',
+    Sport.prototype.save = jest.fn().mockResolvedValue(0);
+    Players.findOne = jest.fn().mockImplementation((player) => {
+      return player.sport === '-'
+        ? {
+            _id: '0000000',
+            name: 'No Player Found',
+            sport: '-',
+          }
+        : {
+            _id: '1111111',
+            name: 'Jest Test',
+            sport: 'testSport',
+          };
+    });
+    const testData: SportShape = {
+      name: 'testSport',
       minimumNoOfPlayers: 2,
       maximumNoOfPlayers: 4,
-    });
+    };
+    const result = await enterData(testData);
     expect(result).toBe(201);
   });
 
   it('should return 400 on error during data entry', async () => {
-    Sport.prototype.save = jest.fn().mockImplementation(() => {
+    Players.findOne = jest.fn().mockImplementation(() => {
       throw new Error('Mock Error');
     });
     const result = await enterData({
@@ -29,57 +52,24 @@ describe('getData', () => {
       return {
         sort: jest.fn().mockImplementation(() => {
           return {
-            limit: jest.fn().mockResolvedValue([
-              {
-                _id: '66443148801d37248e7ebf8a',
-                __v: 0,
-                name: 'Badminton',
-                minimumNoOfPlayers: 2,
-                maximumNoOfPlayers: 4,
-              },
-              {
-                _id: '66443148801d37248e7ebf8b',
-                __v: 0,
-                name: 'Tennis',
-                minimumNoOfPlayers: 2,
-                maximumNoOfPlayers: 4,
-              },
-              {
-                _id: '66443148801d37248e7ebf8c',
-                __v: 0,
-                name: 'Table-Tennis',
-                minimumNoOfPlayers: 2,
-                maximumNoOfPlayers: 4,
-              },
-              {
-                _id: '66443148801d37248e7ebf8d',
-                __v: 0,
-                name: 'Cricket',
-                minimumNoOfPlayers: 22,
-                maximumNoOfPlayers: 22,
-              },
-              {
-                _id: '66443148801d37248e7ebf8e',
-                __v: 0,
-                name: 'Foosball',
-                minimumNoOfPlayers: 2,
-                maximumNoOfPlayers: 4,
-              },
-              {
-                _id: '66443148801d37248e7ebf8f',
-                __v: 0,
-                name: 'Volleyball',
-                minimumNoOfPlayers: 12,
-                maximumNoOfPlayers: 12,
-              },
-              {
-                _id: '66443148801d37248e7ebf8g',
-                __v: 0,
-                name: 'Chess',
-                minimumNoOfPlayers: 2,
-                maximumNoOfPlayers: 2,
-              },
-            ]),
+            limit: jest.fn().mockImplementation(() => {
+              return {
+                populate: jest.fn().mockResolvedValue([
+                  {
+                    _id: '66443148801d37248e7ebf8a',
+                    __v: 0,
+                    name: 'testSport',
+                    minimumNoOfPlayers: 2,
+                    maximumNoOfPlayers: 4,
+                    playerSample: {
+                      _id: '1111111',
+                      name: 'Jest Test',
+                      sport: 'testSport',
+                    },
+                  },
+                ]),
+              };
+            }),
           };
         }),
       };
@@ -89,51 +79,14 @@ describe('getData', () => {
       {
         _id: '66443148801d37248e7ebf8a',
         __v: 0,
-        name: 'Badminton',
+        name: 'testSport',
         minimumNoOfPlayers: 2,
         maximumNoOfPlayers: 4,
-      },
-      {
-        _id: '66443148801d37248e7ebf8b',
-        __v: 0,
-        name: 'Tennis',
-        minimumNoOfPlayers: 2,
-        maximumNoOfPlayers: 4,
-      },
-      {
-        _id: '66443148801d37248e7ebf8c',
-        __v: 0,
-        name: 'Table-Tennis',
-        minimumNoOfPlayers: 2,
-        maximumNoOfPlayers: 4,
-      },
-      {
-        _id: '66443148801d37248e7ebf8d',
-        __v: 0,
-        name: 'Cricket',
-        minimumNoOfPlayers: 22,
-        maximumNoOfPlayers: 22,
-      },
-      {
-        _id: '66443148801d37248e7ebf8e',
-        __v: 0,
-        name: 'Foosball',
-        minimumNoOfPlayers: 2,
-        maximumNoOfPlayers: 4,
-      },
-      {
-        _id: '66443148801d37248e7ebf8f',
-        __v: 0,
-        name: 'Volleyball',
-        minimumNoOfPlayers: 12,
-        maximumNoOfPlayers: 12,
-      },
-      {
-        _id: '66443148801d37248e7ebf8g',
-        __v: 0,
-        name: 'Chess',
-        minimumNoOfPlayers: 2,
-        maximumNoOfPlayers: 2,
+        playerSample: {
+          _id: '1111111',
+          name: 'Jest Test',
+          sport: 'testSport',
+        },
       },
     ]);
   });

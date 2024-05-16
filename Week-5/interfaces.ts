@@ -4,7 +4,6 @@ export interface SportShape {
   name: string;
   minimumNoOfPlayers: number;
   maximumNoOfPlayers: number;
-  playerSample: PlayerData;
 }
 
 export interface AggregateData {
@@ -16,6 +15,10 @@ export interface AggregateData {
 export interface PlayerData {
   name: string;
   sport: string;
+}
+
+export interface SportShapeWithRef extends SportShape {
+  playerSample: PlayerData;
 }
 
 export interface SportDocument extends SportShape, Document {}

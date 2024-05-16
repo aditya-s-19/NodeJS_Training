@@ -46,17 +46,22 @@ const Players: Model<PlayerDocument> = mongoose.model('Players', playerSchema);
 
 const enterData = async (sportData: SportShape): Promise<number> => {
   try {
-    const data = sportData;
-    let samplePlayer = await Players.findOne({ sport: sportData.name });
+    const data: SportShape = sportData;
+    let samplePlayer: PlayerDocument | null = await Players.findOne({
+      sport: sportData.name,
+    });
     if (!samplePlayer) {
       samplePlayer = await Players.findOne({ sport: '-' });
     }
-    const finalData = new Sport({ ...data, playerExample: samplePlayer!._id });
+    const finalData: SportDocument = new Sport({
+      ...data,
+      playerExample: samplePlayer!._id,
+    });
     await finalData.save();
     return 201;
   } catch (err) {
     console.log('Error saving sport data:', err);
-    return 400;
+    return 500;
   }
 };
 
@@ -93,6 +98,7 @@ const getDataAggregation = async (): Promise<AggregateData[]> => {
 
 export {
   Sport,
+  Players,
   sportSchema,
   enterData,
   getData,
