@@ -1,6 +1,11 @@
 const mongoose = require('mongoose');
 import { Model, Schema } from 'mongoose';
-import { AggregateData, SportShape, SportDocument } from './interfaces';
+import {
+  AggregateData,
+  SportShape,
+  SportDocument,
+  PlayerDocument,
+} from './interfaces';
 
 const dbUri = 'mongodb://localhost:27017/players';
 const connectToDatabase = async (): Promise<void> => {
@@ -17,22 +22,37 @@ const sportSchema: Schema = new mongoose.Schema(
     name: String,
     minimumNoOfPlayers: Number,
     maximumNoOfPlayers: Number,
+    playerExample: { type: Schema.Types.ObjectId, ref: 'Players' },
   },
   {
     collection: 'sports',
   },
 );
 
+const playerSchema: Schema = new mongoose.Schema(
+  {
+    name: String,
+    sport: String,
+  },
+  {
+    collection: 'players',
+  },
+);
+
 sportSchema.index({ name: 1 });
 
 const Sport: Model<SportDocument> = mongoose.model('Sport', sportSchema);
+const Players: Model<PlayerDocument> = mongoose.model('Players', playerSchema);
 
 const enterData = async (sportData: SportShape): Promise<number> => {
   try {
-    const data = new Sport(sportData);
-    console.log('Starting saving');
-    await data.save();
-    console.log('Sport data saved successfully');
+    const data = sportData;
+    let samplePlayer = await Players.findOne({ sport: sportData.name });
+    if (!samplePlayer) {
+      samplePlayer = await Players.findOne({ sport: '-' });
+    }
+    const finalData = new Sport({ ...data, playerExample: samplePlayer!._id });
+    await finalData.save();
     return 201;
   } catch (err) {
     console.log('Error saving sport data:', err);
@@ -42,13 +62,10 @@ const enterData = async (sportData: SportShape): Promise<number> => {
 
 const getData = async (): Promise<SportShape[]> => {
   try {
-    console.log('Starting getting');
-
-    const data: SportShape[] = await Sport.find()
+    const data: SportDocument[] = await Sport.find()
       .sort({ maximumNoOfPlayers: -1 })
-      .limit(5);
-    console.log('Done getting');
-
+      .limit(5)
+      .populate('playerExample');
     return data;
   } catch (err) {
     console.log('Error saving sport data:', err);
